@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"lab-manager-api/config"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	config.ConnectDB()
 }
