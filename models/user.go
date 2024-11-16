@@ -10,12 +10,13 @@ const (
 )
 
 type User struct {
+	ID       string
 	Name     string
 	UserType UserType
 	Password string
 }
 
-func NewUser(id int, name string, userType UserType, password string) (User, error) {
+func NewUser(name string, userType UserType, password string) (User, error) {
 	hasedPassword, err := HashPassword(password)
 	if err != nil {
 		return User{}, err

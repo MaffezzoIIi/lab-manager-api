@@ -3,7 +3,8 @@ package main
 import (
 	"lab-manager-api/config"
 	"lab-manager-api/models"
-	"net/http"
+	"lab-manager-api/routes"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,34 +18,11 @@ type CreateUserRequest struct {
 func main() {
 	config.ConnectDB()
 
-	r := gin.Default()
+	router := gin.Default()
 
-	r.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "Server is running!")
-	})
+	routes.InitRoutes(&router.RouterGroup)
 
-	r.POST("/create-user", createUserHandler)
-
-	r.Run(":8080")
-}
-
-func createUserHandler(c *gin.Context) {
-	var req CreateUserRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := router.Run(":8080"); err != nil {
+		log.Fatal(err)
 	}
-
-	hashedPassword, err := models.HashPassword(req.Password)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-		return
-	}
-
-	user := models.User{
-		Name:     req.Name,
-		UserType: req.UserType,
-		Password: hashedPassword,
-	}
-
 }
