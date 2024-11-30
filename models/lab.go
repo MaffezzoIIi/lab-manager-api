@@ -3,10 +3,20 @@ package models
 import (
 	"context"
 	"lab-manager-api/config"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+type SoftwareRequest struct {
+	ID          primitive.ObjectID `bson:"_id"`
+	LabID       primitive.ObjectID `bson:"labID"`
+	UserID      primitive.ObjectID `bson:"userID"`
+	Software    string             `bson:"software"`
+	RequestedAt time.Time          `bson:"requestedAt"`
+	Status      string             `bson:"status"`
+}
 
 type LabStatus string
 
@@ -102,4 +112,32 @@ func DeleteLab(id string) error {
 		return err
 	}
 	return nil
+}
+
+func ReserveLab(labID, userID primitive.ObjectID, startTime, endTime time.Time, period string) (Booking, error) {
+	booking, err := NewBooking(labID, userID, startTime, endTime, period, nil)
+	if err != nil {
+		return Booking{}, err
+	}
+	return SaveBooking(booking)
+}
+
+func NewSoftwareRequest(labID, userID primitive.ObjectID, software string) (SoftwareRequest, error) {
+	return SoftwareRequest{
+		LabID:       labID,
+		UserID:      userID,
+		Software:    software,
+		RequestedAt: time.Now(),
+		Status:      "pending",
+	}, nil
+}
+
+func SaveSoftwareRequest(request SoftwareRequest) (SoftwareRequest, error) {
+	collection := config.DB.Database("lab-manager").Collection("software_requests")
+	result, err := collection.InsertOne(context.Background(), request)
+	if err != nil {
+		return SoftwareRequest{}, err
+	}
+	request.ID = result.InsertedID.(primitive.ObjectID)
+	return request, nil
 }

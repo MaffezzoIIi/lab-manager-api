@@ -15,4 +15,8 @@ func InitRoutes(r *gin.RouterGroup) {
 	r.GET("/labs", controller.GetLabs)
 	r.PUT("/labs/:id", controller.UpdateLab)
 	r.DELETE("/labs/:id", controller.DeleteLab)
+
+	r.POST("/bookings/create", controller.CreateBooking)
+	r.DELETE("/bookings/:id", controller.CancelBooking)
+	r.POST("/bookings/recurring", controller.CreateRecurringBooking)
 }
