@@ -11,6 +11,23 @@ definitions:
       user_type:
         type: integer
     type: object
+  req.CreateLabRequest:
+    properties:
+      acessible:
+        type: boolean
+      local:
+        type: string
+      name:
+        type: string
+      pcNumbers:
+        type: integer
+      softwares:
+        items:
+          type: string
+        type: array
+      status:
+        type: string
+    type: object
   req.CreateUserRequest:
     properties:
       name:
@@ -22,6 +39,25 @@ definitions:
     required:
     - name
     - password
+    type: object
+  res.CreateLabResponse:
+    properties:
+      acessible:
+        type: boolean
+      id:
+        type: string
+      local:
+        type: string
+      name:
+        type: string
+      pcNumbers:
+        type: integer
+      softwares:
+        items:
+          type: string
+        type: array
+      status:
+        type: string
     type: object
   rest_err.Causes:
     properties:
@@ -57,6 +93,138 @@ info:
   title: Lab Manager API
   version: "1.0"
 paths:
+  /api/v1/labs:
+    get:
+      consumes:
+      - application/json
+      description: Fetches a list of all labs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/res.CreateLabResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Retrieve all labs
+      tags:
+      - labs
+  /api/v1/labs/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a specific lab by ID
+      parameters:
+      - description: Lab ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Delete a lab
+      tags:
+      - labs
+    get:
+      consumes:
+      - application/json
+      description: Fetches a lab by its unique identifier
+      parameters:
+      - description: Lab ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CreateLabResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Retrieve a lab by ID
+      tags:
+      - labs
+    put:
+      consumes:
+      - application/json
+      description: Updates the details of a specific lab by ID
+      parameters:
+      - description: Lab ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Lab object with updated details
+        in: body
+        name: lab
+        required: true
+        schema:
+          $ref: '#/definitions/req.CreateLabRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.CreateLabResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Update an existing lab
+      tags:
+      - labs
+  /api/v1/labs/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new lab
+      parameters:
+      - description: Lab object that needs to be created
+        in: body
+        name: lab
+        required: true
+        schema:
+          $ref: '#/definitions/req.CreateLabRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/res.CreateLabResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Create a new lab
+      tags:
+      - labs
   /api/v1/users/create:
     post:
       consumes:

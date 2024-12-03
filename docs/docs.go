@@ -24,6 +24,206 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/labs": {
+            "get": {
+                "description": "Fetches a list of all labs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "labs"
+                ],
+                "summary": "Retrieve all labs",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/res.CreateLabResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/labs/create": {
+            "post": {
+                "description": "Create a new lab",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "labs"
+                ],
+                "summary": "Create a new lab",
+                "parameters": [
+                    {
+                        "description": "Lab object that needs to be created",
+                        "name": "lab",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.CreateLabRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/res.CreateLabResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/labs/{id}": {
+            "get": {
+                "description": "Fetches a lab by its unique identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "labs"
+                ],
+                "summary": "Retrieve a lab by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lab ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CreateLabResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates the details of a specific lab by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "labs"
+                ],
+                "summary": "Update an existing lab",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lab ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Lab object with updated details",
+                        "name": "lab",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.CreateLabRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/res.CreateLabResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes a specific lab by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "labs"
+                ],
+                "summary": "Delete a lab",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lab ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/create": {
             "post": {
                 "description": "Create a new user",
@@ -83,6 +283,32 @@ const docTemplate = `{
                 }
             }
         },
+        "req.CreateLabRequest": {
+            "type": "object",
+            "properties": {
+                "acessible": {
+                    "type": "boolean"
+                },
+                "local": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pcNumbers": {
+                    "type": "integer"
+                },
+                "softwares": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "req.CreateUserRequest": {
             "type": "object",
             "required": [
@@ -98,6 +324,35 @@ const docTemplate = `{
                 },
                 "user_type": {
                     "type": "integer"
+                }
+            }
+        },
+        "res.CreateLabResponse": {
+            "type": "object",
+            "properties": {
+                "acessible": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "local": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pcNumbers": {
+                    "type": "integer"
+                },
+                "softwares": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },

@@ -50,12 +50,17 @@ func NewLab(name string, local string, acessible bool, pcNumbers int, status Lab
 	}, nil
 }
 
-func Save(lab Lab) (Lab, error) {
+func SaveLab(lab Lab) (Lab, error) {
 	collection := config.DB.Database("lab-manager").Collection("labs")
+
+	// Ensure a new ObjectID is generated
+	lab.ID = primitive.NewObjectID()
+
 	result, err := collection.InsertOne(context.Background(), lab)
 	if err != nil {
 		return Lab{}, err
 	}
+
 	lab.ID = result.InsertedID.(primitive.ObjectID)
 	if lab.Softwares == nil {
 		lab.Softwares = []string{}

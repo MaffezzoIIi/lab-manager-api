@@ -24,7 +24,7 @@ type Booking struct {
 	StartTime  time.Time          `bson:"start_time"`
 	EndTime    time.Time          `bson:"end_time"`
 	Period     string             `bson:"period,omitempty"`
-	DaysOfWeek []time.Weekday     `bson:"days_of_week,omitempty"`
+	DaysOfWeek []time.Weekday     `bson:"daysOfWeek,omitempty"`
 }
 
 func NewBooking(labID, userID primitive.ObjectID, startTime, endTime time.Time, period string, daysOfWeek []time.Weekday) (Booking, error) {
