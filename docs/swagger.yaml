@@ -1,0 +1,86 @@
+basePath: /api/v1
+definitions:
+  models.User:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      user_type:
+        type: integer
+    type: object
+  req.CreateUserRequest:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      user_type:
+        type: integer
+    required:
+    - name
+    - password
+    type: object
+  rest_err.Causes:
+    properties:
+      field:
+        type: string
+      message:
+        type: string
+    type: object
+  rest_err.RestErr:
+    properties:
+      causes:
+        items:
+          $ref: '#/definitions/rest_err.Causes'
+        type: array
+      error:
+        type: string
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server for a lab manager.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Lab Manager API
+  version: "1.0"
+paths:
+  /api/v1/users/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: User object that needs to be created
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/req.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Create a new user
+      tags:
+      - users
+swagger: "2.0"

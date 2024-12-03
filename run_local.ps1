@@ -2,6 +2,8 @@
 
 go mod tidy 
 
-go build -o ./bin/ ./cmd/...
+go build -o ./bin/ .
 
-./bin/cmd.exe
+swag init
+
+./bin/lab-manager-api.exe
