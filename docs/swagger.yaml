@@ -1,5 +1,20 @@
 basePath: /api/v1
 definitions:
+  models.SoftwareRequest:
+    properties:
+      id:
+        type: string
+      labID:
+        type: string
+      requestedAt:
+        type: string
+      software:
+        type: string
+      status:
+        type: string
+      userID:
+        type: string
+    type: object
   models.User:
     properties:
       id:
@@ -10,6 +25,25 @@ definitions:
         type: string
       user_type:
         type: integer
+    type: object
+  req.CreateBooking:
+    properties:
+      end_time:
+        type: string
+      lab_id:
+        type: string
+      period:
+        type: string
+      start_time:
+        type: string
+      user_id:
+        type: string
+    required:
+    - end_time
+    - lab_id
+    - period
+    - start_time
+    - user_id
     type: object
   req.CreateLabRequest:
     properties:
@@ -28,6 +62,37 @@ definitions:
       status:
         type: string
     type: object
+  req.CreateRecurringBookingRequest:
+    properties:
+      count:
+        description: Number of bookings to create
+        type: integer
+      daysOfWeek:
+        description: Days of the week (0 = Sunday, 6 = Saturday)
+        items:
+          type: integer
+        type: array
+      end_time:
+        description: End time in ISO 8601 format
+        type: string
+      lab_id:
+        description: Lab ID
+        type: string
+      period:
+        description: Booking period
+        type: string
+      start_time:
+        description: Start time in ISO 8601 format
+        type: string
+      user_id:
+        description: User ID
+        type: string
+    type: object
+  req.CreateSoftwareRequest:
+    properties:
+      name:
+        type: string
+    type: object
   req.CreateUserRequest:
     properties:
       name:
@@ -39,6 +104,32 @@ definitions:
     required:
     - name
     - password
+    type: object
+  res.BookingResponse:
+    properties:
+      daysOfWeek:
+        description: Days of the week (0 = Sunday, 6 = Saturday)
+        items:
+          type: integer
+        type: array
+      end_time:
+        description: End time in ISO 8601 format
+        type: string
+      id:
+        description: Booking ID
+        type: string
+      lab_id:
+        description: Lab ID
+        type: string
+      period:
+        description: Booking period
+        type: string
+      start_time:
+        description: Start time in ISO 8601 format
+        type: string
+      user_id:
+        description: User ID
+        type: string
     type: object
   res.CreateLabResponse:
     properties:
@@ -57,6 +148,32 @@ definitions:
           type: string
         type: array
       status:
+        type: string
+    type: object
+  res.CreateRecurringBookingResponse:
+    properties:
+      daysOfWeek:
+        description: Days of the week (0 = Sunday, 6 = Saturday)
+        items:
+          type: integer
+        type: array
+      end_time:
+        description: End time in ISO 8601 format
+        type: string
+      id:
+        description: Booking ID
+        type: string
+      lab_id:
+        description: Lab ID
+        type: string
+      period:
+        description: Booking period
+        type: string
+      start_time:
+        description: Start time in ISO 8601 format
+        type: string
+      user_id:
+        description: User ID
         type: string
     type: object
   rest_err.Causes:
@@ -93,6 +210,81 @@ info:
   title: Lab Manager API
   version: "1.0"
 paths:
+  /api/v1/bookings/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Cancel a booking
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Cancel a booking
+      tags:
+      - bookings
+  /api/v1/bookings/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new booking
+      parameters:
+      - description: Booking object that needs to be created
+        in: body
+        name: booking
+        required: true
+        schema:
+          $ref: '#/definitions/req.CreateBooking'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/res.BookingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Create a new booking
+      tags:
+      - bookings
+  /api/v1/bookings/recurring:
+    post:
+      consumes:
+      - application/json
+      description: Create recurring bookings
+      parameters:
+      - description: Recurring booking object that needs to be created
+        in: body
+        name: booking
+        required: true
+        schema:
+          $ref: '#/definitions/req.CreateRecurringBookingRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/res.CreateRecurringBookingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Create recurring bookings
+      tags:
+      - bookings
   /api/v1/labs:
     get:
       consumes:
@@ -225,6 +417,32 @@ paths:
       summary: Create a new lab
       tags:
       - labs
+  /api/v1/software_requests/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new software request
+      parameters:
+      - description: Software request object that needs to be created
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/req.CreateSoftwareRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SoftwareRequest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Create a new software request
+      tags:
+      - software_requests
   /api/v1/users/create:
     post:
       consumes:

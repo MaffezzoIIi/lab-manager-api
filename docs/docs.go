@@ -24,6 +24,121 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/bookings/create": {
+            "post": {
+                "description": "Create a new booking",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Create a new booking",
+                "parameters": [
+                    {
+                        "description": "Booking object that needs to be created",
+                        "name": "booking",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.CreateBooking"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/res.BookingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/bookings/recurring": {
+            "post": {
+                "description": "Create recurring bookings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Create recurring bookings",
+                "parameters": [
+                    {
+                        "description": "Recurring booking object that needs to be created",
+                        "name": "booking",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.CreateRecurringBookingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/res.CreateRecurringBookingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/bookings/{id}": {
+            "delete": {
+                "description": "Cancel a booking",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Cancel a booking",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Booking ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/labs": {
             "get": {
                 "description": "Fetches a list of all labs",
@@ -224,6 +339,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/software_requests/create": {
+            "post": {
+                "description": "Create a new software request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "software_requests"
+                ],
+                "summary": "Create a new software request",
+                "parameters": [
+                    {
+                        "description": "Software request object that needs to be created",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.CreateSoftwareRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.SoftwareRequest"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/create": {
             "post": {
                 "description": "Create a new user",
@@ -266,6 +421,29 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.SoftwareRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "labID": {
+                    "type": "string"
+                },
+                "requestedAt": {
+                    "type": "string"
+                },
+                "software": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
         "models.User": {
             "type": "object",
             "properties": {
@@ -280,6 +458,33 @@ const docTemplate = `{
                 },
                 "user_type": {
                     "type": "integer"
+                }
+            }
+        },
+        "req.CreateBooking": {
+            "type": "object",
+            "required": [
+                "end_time",
+                "lab_id",
+                "period",
+                "start_time",
+                "user_id"
+            ],
+            "properties": {
+                "end_time": {
+                    "type": "string"
+                },
+                "lab_id": {
+                    "type": "string"
+                },
+                "period": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         },
@@ -309,6 +514,50 @@ const docTemplate = `{
                 }
             }
         },
+        "req.CreateRecurringBookingRequest": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "description": "Number of bookings to create",
+                    "type": "integer"
+                },
+                "daysOfWeek": {
+                    "description": "Days of the week (0 = Sunday, 6 = Saturday)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "end_time": {
+                    "description": "End time in ISO 8601 format",
+                    "type": "string"
+                },
+                "lab_id": {
+                    "description": "Lab ID",
+                    "type": "string"
+                },
+                "period": {
+                    "description": "Booking period",
+                    "type": "string"
+                },
+                "start_time": {
+                    "description": "Start time in ISO 8601 format",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "User ID",
+                    "type": "string"
+                }
+            }
+        },
+        "req.CreateSoftwareRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "req.CreateUserRequest": {
             "type": "object",
             "required": [
@@ -324,6 +573,42 @@ const docTemplate = `{
                 },
                 "user_type": {
                     "type": "integer"
+                }
+            }
+        },
+        "res.BookingResponse": {
+            "type": "object",
+            "properties": {
+                "daysOfWeek": {
+                    "description": "Days of the week (0 = Sunday, 6 = Saturday)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "end_time": {
+                    "description": "End time in ISO 8601 format",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Booking ID",
+                    "type": "string"
+                },
+                "lab_id": {
+                    "description": "Lab ID",
+                    "type": "string"
+                },
+                "period": {
+                    "description": "Booking period",
+                    "type": "string"
+                },
+                "start_time": {
+                    "description": "Start time in ISO 8601 format",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "User ID",
+                    "type": "string"
                 }
             }
         },
@@ -352,6 +637,42 @@ const docTemplate = `{
                     }
                 },
                 "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "res.CreateRecurringBookingResponse": {
+            "type": "object",
+            "properties": {
+                "daysOfWeek": {
+                    "description": "Days of the week (0 = Sunday, 6 = Saturday)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "end_time": {
+                    "description": "End time in ISO 8601 format",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Booking ID",
+                    "type": "string"
+                },
+                "lab_id": {
+                    "description": "Lab ID",
+                    "type": "string"
+                },
+                "period": {
+                    "description": "Booking period",
+                    "type": "string"
+                },
+                "start_time": {
+                    "description": "Start time in ISO 8601 format",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "User ID",
                     "type": "string"
                 }
             }

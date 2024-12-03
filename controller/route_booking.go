@@ -10,6 +10,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// CreateBooking godoc
+// @Summary Create a new booking
+// @Description Create a new booking
+// @Tags bookings
+// @Accept  json
+// @Produce  json
+// @Param booking body req.CreateBooking true "Booking object that needs to be created"
+// @Success 201 {object} res.BookingResponse
+// @Failure 400 {object} rest_err.RestErr
+// @Router /api/v1/bookings/create [post]
 func CreateBooking(c *gin.Context) {
 	var createBooking req.CreateBooking
 	if err := c.ShouldBindJSON(&createBooking); err != nil {
@@ -42,6 +52,16 @@ func CreateBooking(c *gin.Context) {
 	c.JSON(http.StatusCreated, MapToBookingResponse(booking))
 }
 
+// CancelBooking godoc
+// @Summary Cancel a booking
+// @Description Cancel a booking
+// @Tags bookings
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Booking ID"
+// @Success 200 {object} nil
+// @Failure 400 {object} rest_err.RestErr
+// @Router /api/v1/bookings/{id} [delete]
 func CancelBooking(c *gin.Context) {
 	bookingIDHex := c.Param("id")
 	bookingID, err := primitive.ObjectIDFromHex(bookingIDHex)
@@ -59,6 +79,16 @@ func CancelBooking(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "booking cancelled successfully"})
 }
 
+// CreateRecurringBooking godoc
+// @Summary Create recurring bookings
+// @Description Create recurring bookings
+// @Tags bookings
+// @Accept  json
+// @Produce  json
+// @Param booking body req.CreateRecurringBookingRequest true "Recurring booking object that needs to be created"
+// @Success 201 {object} res.CreateRecurringBookingResponse
+// @Failure 400 {object} rest_err.RestErr
+// @Router /api/v1/bookings/recurring [post]
 func CreateRecurringBooking(c *gin.Context) {
 	var createBooking struct {
 		LabID      string         `json:"lab_id"`
@@ -95,6 +125,16 @@ func CreateRecurringBooking(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"bookings": bookings})
 }
 
+// CreateSoftwareRequest godoc
+// @Summary Create a new software request
+// @Description Create a new software request
+// @Tags software_requests
+// @Accept  json
+// @Produce  json
+// @Param request body req.CreateSoftwareRequest true "Software request object that needs to be created"
+// @Success 201 {object} models.SoftwareRequest
+// @Failure 400 {object} rest_err.RestErr
+// @Router /api/v1/software_requests/create [post]
 func CreateSoftwareRequest(c *gin.Context) {
 	var createRequest struct {
 		LabID    string `json:"lab_id"`
