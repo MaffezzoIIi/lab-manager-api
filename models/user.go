@@ -1,9 +1,12 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"lab-manager-api/config"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -38,12 +41,21 @@ type User struct {
 }
 
 func NewUser(name string, userType UserType, password string) (User, error) {
-	hasedPassword, err := HashPassword(password)
-	if err != nil {
-		return User{}, err
-	}
+    hashedPassword, err := HashPassword(password)
+    if err != nil {
+        return User{}, err
+    }
 
-	return User{Name: name, UserType: userType, Password: hasedPassword}, nil
+    collection := config.DB.Database("lab-manager").Collection("users")
+
+    result, err := collection.InsertOne(context.Background(), User{Name: name, UserType: userType, Password: hashedPassword})
+    if err != nil {
+        return User{}, err
+    }
+
+    id := result.InsertedID.(primitive.ObjectID).Hex()
+
+    return User{ID: id, Name: name, UserType: userType, Password: hashedPassword}, nil
 }
 
 func HashPassword(password string) (string, error) {
