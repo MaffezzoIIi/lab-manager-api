@@ -3,7 +3,7 @@ package controller
 import (
 	"fmt"
 	"lab-manager-api/controller/model/req"
-	"lab-manager-api/models"
+	"lab-manager-api/models/lab"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,21 +26,21 @@ func CreateLab(c *gin.Context) {
 		return
 	}
 
-	lab, err := models.NewLab(labReq.Name, labReq.Local, labReq.Acessible,
-		labReq.PcNumbers, models.LabStatus(labReq.Status), labReq.Softwares)
+	new_lab, err := lab.NewLab(labReq.Name, labReq.Local, labReq.Acessible,
+		labReq.PcNumbers, lab.LabStatus(labReq.Status), labReq.Softwares)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": "error creating lab"})
 		return
 	}
 
-	lab, err = models.SaveLab(lab)
+	new_lab, err = lab.SaveLab(new_lab)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(201, MapLabToResponse(lab))
+	c.JSON(201, MapLabToResponse(new_lab))
 }
 
 // GetLab godoc
@@ -54,7 +54,7 @@ func CreateLab(c *gin.Context) {
 // @Failure 404 {object} rest_err.RestErr
 // @Router /api/v1/labs/{id} [get]
 func GetLab(c *gin.Context) {
-	lab, err := models.FindLab(c.Param("id"))
+	lab, err := lab.FindLab(c.Param("id"))
 	if err != nil {
 		c.JSON(404, gin.H{"error": "lab not found"})
 		return
@@ -73,7 +73,7 @@ func GetLab(c *gin.Context) {
 // @Failure 500 {object} rest_err.RestErr
 // @Router /api/v1/labs [get]
 func GetLabs(c *gin.Context) {
-	labs, err := models.FindAllLabs()
+	labs, err := lab.FindAllLabs()
 	if err != nil {
 		c.JSON(500, gin.H{"error": "error finding labs"})
 		return
@@ -108,27 +108,27 @@ func UpdateLab(c *gin.Context) {
 		return
 	}
 
-	lab, err := models.FindLab(c.Param("id"))
+	found_lab, err := lab.FindLab(c.Param("id"))
 	if err != nil {
 		c.JSON(404, gin.H{"error": "lab not found"})
 		return
 	}
 
-	lab.Name = labReq.Name
-	lab.Local = labReq.Local
-	lab.Acessible = labReq.Acessible
-	lab.PcNumbers = labReq.PcNumbers
-	lab.Status = models.LabStatus(labReq.Status)
-	lab.Softwares = labReq.Softwares
+	found_lab.Name = labReq.Name
+	found_lab.Local = labReq.Local
+	found_lab.Acessible = labReq.Acessible
+	found_lab.PcNumbers = labReq.PcNumbers
+	found_lab.Status = lab.LabStatus(labReq.Status)
+	found_lab.Softwares = labReq.Softwares
 
-	lab, err = models.UpdateLab(lab)
+	found_lab, err = lab.UpdateLab(found_lab)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(500, gin.H{"error": "error saving lab"})
 		return
 	}
 
-	c.JSON(200, MapLabToResponse(lab))
+	c.JSON(200, MapLabToResponse(found_lab))
 }
 
 // DeleteLab godoc
@@ -142,7 +142,7 @@ func UpdateLab(c *gin.Context) {
 // @Failure 500 {object} rest_err.RestErr
 // @Router /api/v1/labs/{id} [delete]
 func DeleteLab(c *gin.Context) {
-	err := models.DeleteLab(c.Param("id"))
+	err := lab.DeleteLab(c.Param("id"))
 	if err != nil {
 		c.JSON(500, gin.H{"error": "error deleting lab"})
 		return
@@ -151,7 +151,7 @@ func DeleteLab(c *gin.Context) {
 	c.JSON(204, nil)
 }
 
-func MapLabToResponse(lab models.Lab) interface{} {
+func MapLabToResponse(lab lab.Lab) interface{} {
 	return gin.H{
 		"id":        lab.ID,
 		"name":      lab.Name,

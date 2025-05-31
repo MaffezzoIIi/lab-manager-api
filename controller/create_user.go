@@ -3,7 +3,7 @@ package controller
 import (
 	"lab-manager-api/controller/model/req"
 
-	"lab-manager-api/models"
+	"lab-manager-api/models/user"
 	"lab-manager-api/rest_err"
 	"log"
 	"net/http"
@@ -31,7 +31,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	user, err := models.NewUser(userReq.Name, models.UserType(userReq.UserType), userReq.Password)
+	user, err := user.NewUser(userReq.Name, user.UserType(userReq.UserType), userReq.Password)
 	if err != nil {
 		restErr := rest_err.NewRestErr("error creating user", http.StatusInternalServerError, "internal_server_error", []rest_err.Causes{{Message: err.Error()}})
 		c.JSON(restErr.Status, restErr)
@@ -42,11 +42,12 @@ func CreateUser(c *gin.Context) {
 }
 
 type CreateUserResponse struct {
-	ID       string    `json:"id"`
+	ID       string `json:"id"`
 	Name     string `json:"name"`
 	UserType int    `json:"user_type"`
 }
-func ModelUserToResponse(user models.User) CreateUserResponse {
+
+func ModelUserToResponse(user user.User) CreateUserResponse {
 	userType := int(user.UserType)
 
 	return CreateUserResponse{
