@@ -3,7 +3,7 @@ package main
 import (
 	"lab-manager-api/config"
 	"lab-manager-api/docs"
-	"lab-manager-api/models"
+	"lab-manager-api/models/user"
 	"lab-manager-api/routes"
 	"log"
 	"time"
@@ -29,9 +29,9 @@ import (
 // @host localhost:8080
 // @BasePath /api/v1
 type CreateUserRequest struct {
-	Name     string          `json:"name" binding:"required"`
-	UserType models.UserType `json:"user_type"`
-	Password string          `json:"password" binding:"required"`
+	Name     string        `json:"name" binding:"required"`
+	UserType user.UserType `json:"user_type"`
+	Password string        `json:"password" binding:"required"`
 }
 
 func main() {
@@ -40,13 +40,13 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-        AllowOrigins:     []string{"http://localhost:5173"}, // Update with your allowed origins
-        AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-        AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
-        ExposeHeaders:    []string{"Content-Length"},
-        AllowCredentials: true,
-        MaxAge:           12 * time.Hour,
-    }))
+		AllowOrigins:     []string{"http://localhost:5173"}, // Update with your allowed origins
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	docs.SwaggerInfo.BasePath = "/"
 
