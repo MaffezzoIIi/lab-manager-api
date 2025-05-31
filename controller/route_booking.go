@@ -2,7 +2,8 @@ package controller
 
 import (
 	"lab-manager-api/controller/model/req"
-	"lab-manager-api/models"
+	"lab-manager-api/models/booking"
+	"lab-manager-api/models/lab"
 	"net/http"
 	"time"
 
@@ -38,18 +39,18 @@ func CreateBooking(c *gin.Context) {
 		return
 	}
 
-	booking, err := models.NewBooking(labID, userID, createBooking.StartTime, createBooking.EndTime, createBooking.Period, nil)
+	new_booking, err := booking.NewBooking(labID, userID, createBooking.StartTime, createBooking.EndTime, createBooking.Period, nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error creating booking"})
 		return
 	}
 
-	if booking, err = models.SaveBooking(booking); err != nil {
+	if new_booking, err = booking.SaveBooking(new_booking); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error saving booking"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, MapToBookingResponse(booking))
+	c.JSON(http.StatusCreated, MapToBookingResponse(new_booking))
 }
 
 // CancelBooking godoc
@@ -70,7 +71,7 @@ func CancelBooking(c *gin.Context) {
 		return
 	}
 
-	err = models.DeleteBooking(bookingID)
+	err = booking.DeleteBooking(bookingID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error deleting booking"})
 		return
@@ -116,7 +117,7 @@ func CreateRecurringBooking(c *gin.Context) {
 		return
 	}
 
-	bookings, err := models.CreateRecurringBookings(labID, userID, createBooking.StartTime, createBooking.EndTime, createBooking.Period, createBooking.DaysOfWeek, createBooking.Count)
+	bookings, err := booking.CreateRecurringBookings(labID, userID, createBooking.StartTime, createBooking.EndTime, createBooking.Period, createBooking.DaysOfWeek, createBooking.Count)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error creating recurring bookings"})
 		return
@@ -158,13 +159,13 @@ func CreateSoftwareRequest(c *gin.Context) {
 		return
 	}
 
-	request, err := models.NewSoftwareRequest(labID, userID, createRequest.Software)
+	request, err := lab.NewSoftwareRequest(labID, userID, createRequest.Software)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error creating software request"})
 		return
 	}
 
-	if request, err = models.SaveSoftwareRequest(request); err != nil {
+	if request, err = lab.SaveSoftwareRequest(request); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error saving software request"})
 		return
 	}
@@ -174,11 +175,11 @@ func CreateSoftwareRequest(c *gin.Context) {
 	c.JSON(http.StatusCreated, request)
 }
 
-func notifyAdmin(request models.SoftwareRequest) {
+func notifyAdmin(request lab.SoftwareRequest) {
 	// Implementar lógica de notificação aqui (ex: enviar email, mensagem, etc.)
 }
 
-func MapToBookingResponse(booking models.Booking) gin.H {
+func MapToBookingResponse(booking booking.Booking) gin.H {
 	return gin.H{
 		"id":         booking.ID,
 		"lab_id":     booking.LabID,
