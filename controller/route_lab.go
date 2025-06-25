@@ -27,7 +27,7 @@ func CreateLab(c *gin.Context) {
 	}
 
 	new_lab, err := lab.NewLab(labReq.Name, labReq.Local, labReq.Acessible,
-		labReq.PcNumbers, lab.LabStatus(labReq.Status), labReq.Softwares)
+		labReq.PcNumbers, lab.LabStatus(labReq.Status), labReq.Softwares, labReq.Description)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": "error creating lab"})
@@ -153,12 +153,13 @@ func DeleteLab(c *gin.Context) {
 
 func MapLabToResponse(lab lab.Lab) interface{} {
 	return gin.H{
-		"id":        lab.ID,
-		"name":      lab.Name,
-		"local":     lab.Local,
-		"acessible": lab.Acessible,
-		"pcNumbers": lab.PcNumbers,
-		"status":    lab.Status,
-		"softwares": lab.Softwares,
+		"id":          lab.ID,
+		"name":        lab.Name,
+		"local":       lab.Local,
+		"acessible":   lab.Acessible,
+		"pcNumbers":   lab.PcNumbers,
+		"status":      lab.Status,
+		"softwares":   lab.Softwares,
+		"description": lab.Description,
 	}
 }
