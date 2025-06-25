@@ -1,6 +1,6 @@
 module lab-manager-api
 
-go 1.22.6
+go 1.22
 
 require (
 	github.com/gin-contrib/cors v1.7.2
