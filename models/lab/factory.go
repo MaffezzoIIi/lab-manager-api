@@ -7,15 +7,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func NewLab(name string, local string, acessible bool, pcNumbers int, status LabStatus, softwares []string) (Lab, error) {
+func NewLab(name string, local string, acessible bool, pcNumbers int, status LabStatus, softwares []string, description string) (Lab, error) {
 	return Lab{
-		Name:      name,
-		Local:     local,
-		Acessible: acessible,
-		PcNumbers: pcNumbers,
-		Status:    status,
-		Bookings:  []booking.Booking{},
-		Softwares: softwares,
+		Name:        name,
+		Local:       local,
+		Acessible:   acessible,
+		PcNumbers:   pcNumbers,
+		Status:      status,
+		Bookings:    []booking.Booking{},
+		Softwares:   softwares,
+		Description: description,
 	}, nil
 }
 

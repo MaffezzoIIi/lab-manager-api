@@ -27,12 +27,13 @@ const (
 )
 
 type Lab struct {
-	ID        primitive.ObjectID `bson:"_id"`
-	Name      string             `bson:"name"`
-	Local     string             `bson:"local"`
-	Acessible bool               `bson:"acessible"`
-	PcNumbers int                `bson:"pcNumbers"`
-	Status    LabStatus          `bson:"status"`
-	Bookings  []booking.Booking  `bson:"reservas"`
-	Softwares []string           `bson:"softwares"`
+	ID          primitive.ObjectID `bson:"_id"`
+	Name        string             `bson:"name"`
+	Local       string             `bson:"local"`
+	Acessible   bool               `bson:"acessible"`
+	PcNumbers   int                `bson:"pcNumbers"`
+	Status      LabStatus          `bson:"status"`
+	Bookings    []booking.Booking  `bson:"reservas"`
+	Softwares   []string           `bson:"softwares"`
+	Description string             `bson:"description"`
 }
